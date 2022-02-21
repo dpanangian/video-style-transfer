@@ -93,7 +93,6 @@ def image(output_filename,
         for iteration_num in tqdm(range(1,iterations+1),unit='iteration',desc='single image',leave=leave_progress_bar):
             #perform iterations of train()
             lossAll = eng.train(iteration_num)
-           
             if save_every and iteration_num % save_every == 0:
                 if verbose:
                     # display some statistics about how the GAN training is going whever we save an interim image

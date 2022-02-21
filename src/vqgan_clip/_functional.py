@@ -15,6 +15,14 @@ import glob, os
 import subprocess
 import contextlib
 import piexif
+import cv2
+import numpy
+
+Tensor = torch.Tensor
+
+import lpips
+loss_fn_alex = lpips.LPIPS(net='alex') # best forward scores
+loss_fn_vgg = lpips.LPIPS(net='vgg') # closer to "traditional" perceptual loss, when used for optimization
 
 def sinc(x):
     return torch.where(x != 0, torch.sin(math.pi * x) / (math.pi * x), x.new_ones([]))
@@ -466,3 +474,18 @@ def copy_image_metadata(files_with_metadata_path,files_needing_metadata_path):
                     pass
                 else:
                     raise
+
+
+def lpips_loss(
+    input: Tensor,
+    target: Tensor
+) -> Tensor:
+
+    input = numpy.array(input)
+    target = numpy.array(target)
+    img0 = lpips.im2tensor(input)
+    img1 = lpips.im2tensor(target)
+    # Compute distance
+    dist = loss_fn_vgg.forward(img0, img1)
+
+    return dist.cuda()

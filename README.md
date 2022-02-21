@@ -25,6 +25,8 @@ Some [sample](samples) images:
 
 Environment:
 
+conda create --name vqgan python=3.9 pip numpy pytest tqdm git pytorch==1.9.0 torchvision=0.10.0 torchaudio=0.9.0 cudatoolkit=11.1 -c pytorch -c conda-forge
+
 * Tested on Windows 10 build 19043
   * GPU: Nvidia RTX 3080 10GB
   * CPU: AMD 5900X

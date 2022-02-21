@@ -75,7 +75,8 @@ class Engine:
     def __init__(self, config=VQGAN_CLIP_Config()):
         # self._optimiser = optim.Adam([self._z], lr=0.1)
         self.apply_configuration(config)
-
+        self._pil_image = None
+        self._output_pil_image = None
         self._gumbel = False
 
         self.replace_grad = VF.ReplaceGrad.apply
@@ -174,6 +175,11 @@ class Engine:
             save_filename (str): string containing the path to save the generated image. e.g. 'output.png' or 'outputs/my_file.png'
         """
         self.save_tensor_as_image(self.output_tensor, save_filename, img_metadata)
+ 
+    def save_tensor_as_PIL(self):
+        with torch.inference_mode():
+            self._output_pil_image = TF.to_pil_image(self.output_tensor[0].cpu())
+    
 
     @staticmethod
     def save_tensor_as_image(image_tensor, save_filename, img_metadata=None):
@@ -202,12 +208,16 @@ class Engine:
         """
         self.output_tensor = self.synth(self._z)
         encoded_image = self._perceptor.encode_image(VF.normalize(self._make_cutouts(self.output_tensor))).float()
-        
+        self.save_tensor_as_PIL()
         result = []
 
         if self.conf.init_weight:
             if self.conf.init_image_method == 'original':
                 result.append(F.mse_loss(self._z, self._z_orig) * self.conf.init_weight / 2)
+            elif self.conf.init_image_method == 'lpips':
+                orig_image= self._pil_image
+                output_image = self._output_pil_image
+                result.append(VF.lpips_loss(orig_image, output_image) * self.conf.init_weight / 2)
             elif self.conf.init_image_method == 'decay':
                 result.append(F.mse_loss(self._z, torch.zeros_like(self._z_orig)) * ((1/torch.tensor(iteration_number*2 + 1))*self.conf.init_weight) / 2)
             elif self.conf.init_image_method == 'alternate_img_target':
@@ -329,6 +339,7 @@ class Engine:
         output_image_size_X, output_image_size_Y = self.calculate_output_image_size()
         pil_image = pil_image.convert('RGB')
         pil_image = pil_image.resize((output_image_size_X, output_image_size_Y), Image.LANCZOS)
+        self._pil_image = pil_image
         pil_tensor = TF.to_tensor(pil_image)
         latent_vector, *_ = self._model.encode(pil_tensor.to(self._device).unsqueeze(0) * 2 - 1)
         return latent_vector

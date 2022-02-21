@@ -7,16 +7,21 @@ import os
 from vqgan_clip import _functional as VF
 
 config = VQGAN_CLIP_Config()
-config.output_image_size = [684, 384]
+config.output_image_size = [180, 128]
+config.init_image_method = 'lpips'
 # Set True if you installed the Real-ESRGAN package for upscaling.
 upscale_image = True
-text_prompts = 'A pastoral landscape painting by Rembrandt'
+text_prompts = 'potrait painting by Rembrandt'
 
 output_filename = f'example media{os.sep}example image.jpg'
 metadata_comment = generate.image(eng_config=config,
+                                  init_image=r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\images\init_image.jpg',
+                                  init_weight=3.2,
+                                  save_every=5,
                                   text_prompts=text_prompts,
-                                  iterations=400,
-                                  output_filename=output_filename)
+                                  iterations=15,
+                                  output_filename=output_filename,
+                                  verbose=True)
 
 # Upscale the image
 if upscale_image:
