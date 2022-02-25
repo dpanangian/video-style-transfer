@@ -199,7 +199,6 @@ class Engine:
 
     def ascend_txt(self,iteration_number):
         """Part of the process of training a GAN
-
         Args:
             iteration_number (int): Current iteration number, used only to adjust the weight of the inital image if init_weight is used.
 
@@ -379,12 +378,10 @@ class Engine:
     def set_alternate_image_target(self, pil_image):
         """Sets an alternate image target to replace the init_image when training.
         Use this when you want to have the image evolve toward a different image than the initial image.
-
         Args:
             pil_image (PIL image): A pil image "Image.open(self.conf.init_image)"
         """
-        self._z_orig= self.pil_image_to_latent_vector(pil_image)
-        self.pil_tensor_init = self.pil_image_to_tensor(pil_image)
+        self._alternate_img_target = self.pil_image_to_latent_vector(pil_image)
 
     def clear_all_prompts(self):
         """Clear all encoded prompts. You might use this during video generation to reset the prompts so that you can cause the video to steer in a new direction.

@@ -9,10 +9,10 @@ import subprocess
 from vqgan_clip import _functional as VF
 
 config = VQGAN_CLIP_Config()
-config.output_image_size = [360,640]
+config.output_image_size = [90,160]
 config.init_image_method = 'mse-lpips'
 text_prompts = None
-image_prompts = '/content/drive/MyDrive/vqgan-clip-generator/samples/hokusai.jpg'
+image_prompts = r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\samples\hokusai.jpg'
 input_video_path = 'potrait_Trim.mp4'
 output_root_dir = 'example media'
 # Generated video framerate. Images will be extracted from the source video at this framerate, using interpolation if needed.

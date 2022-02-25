@@ -11,6 +11,14 @@
             "program": "${workspaceFolder}/examples/single_image_loss.py",
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "Python: style_transfer.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/style_transfer.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

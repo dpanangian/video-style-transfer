@@ -18,7 +18,6 @@ import piexif
 import cv2
 import numpy
 from torch.autograd import Variable
-from pytorch_msssim import ssim, ms_ssim, SSIM, MS_SSIM
 
 Tensor = torch.Tensor
 
@@ -487,11 +486,6 @@ def spherical_dist_loss(x, y):
     x = F.normalize(x, dim=-1)
     y = F.normalize(y, dim=-1)
     return (x - y).norm(dim=-1).div(2).arcsin().pow(2).mul(2)
-
-def ssim_loss(x,y):
-    dist = 1-ssim( x, y, data_range=1, size_average=True)
-    return dist
-
 
  
 

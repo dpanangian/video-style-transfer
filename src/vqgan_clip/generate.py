@@ -92,7 +92,7 @@ def image(output_filename,
     try:
         for iteration_num in tqdm(range(1,iterations+1),unit='iteration',desc='single image',leave=leave_progress_bar):
             #perform iterations of train()
-            lossAll = eng.train(iteration_num)
+            lossAll = eng.train(iteration_num)   
             if save_every and iteration_num % save_every == 0:
                 if verbose:
                     # display some statistics about how the GAN training is going whever we save an interim image
@@ -138,7 +138,6 @@ def style_transfer(video_frames,
     Set values of source_frame_weight to determine how closely the result will match the source image. Balance iteration_per_frame and source_frame_weight to influence output.
     Set z_smoother to True to apply some latent-vector-based motion smoothing that will increase frame-to-frame consistency further at the cost of adding some motion blur.
     Set current_source_frame_prompt_weight >0 to have the generated content CLIP-match the source image.
-
     Args:
     * video_frames (list of str) : List of paths to the video frames that will be restyled.
     * eng_config (VQGAN_CLIP_Config, optional): An instance of VQGAN_CLIP_Config with attributes customized for your use. See the documentation for VQGAN_CLIP_Config().
@@ -179,6 +178,7 @@ def style_transfer(video_frames,
     # Let's generate a single image to initialize the video. Otherwise it takes a few frames for the new video to stabilize on the generated imagery.
     init_image = 'init_image.jpg'
     eng_config_init_img = eng_config
+    eng_config_init_img.init_image_method = 'original'
     image(output_filename=init_image,
         eng_config=eng_config_init_img,
         text_prompts=text_prompts,
@@ -206,7 +206,9 @@ def style_transfer(video_frames,
 
     output_size_X, output_size_Y = VF.filesize_matching_aspect_ratio(video_frames[0], eng_config.output_image_size[0], eng_config.output_image_size[1])
     eng_config.output_image_size = [output_size_X, output_size_Y]
-
+    # alternate_img_target is required for restyling video. alternate_img_target_decay is experimental.
+    if eng_config.init_image_method not in ['alternate_img_target_decay', 'alternate_img_target']:
+        eng_config.init_image_method = 'alternate_img_target'
 
     # suppress stdout to keep the progress bar clear
     with open(os.devnull, 'w') as devnull:
@@ -238,7 +240,6 @@ def style_transfer(video_frames,
             # alternate_image_target is the new source frame of video. Apply a loss in Engine using conf.init_image_method == 'alternate_img_target'
             # The previous output will be trained to change toward the new source frame.
             pil_image_new_frame = Image.open(video_frame).convert('RGB').resize([output_size_X,output_size_Y], resample=Image.LANCZOS)
-            
             eng.set_alternate_image_target(pil_image_new_frame)
 
             # Optionally use the current source video frame, and the previous generate frames, as input prompts
@@ -248,8 +249,8 @@ def style_transfer(video_frames,
                     # change prompts if the current frame number is in the list of change frames
                     current_prompt_number += 1
             eng.encode_and_append_prompts(current_prompt_number, parsed_text_prompts, parsed_image_prompts, parsed_noise_prompts)
-            #if current_source_frame_prompt_weight:
-            #    eng.encode_and_append_pil_image(pil_image_new_frame, weight=current_source_frame_prompt_weight)
+            if current_source_frame_prompt_weight:
+                eng.encode_and_append_pil_image(pil_image_new_frame, weight=current_source_frame_prompt_weight)
 
             # Generate a new image
             for iteration_num in tqdm(range(1,iterations_per_frame+1),unit='iteration',desc='generating frame',leave=False):

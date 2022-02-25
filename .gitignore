@@ -117,3 +117,4 @@ dmypy.json
 example media/
 examples/
 tests/
+.vscode/launch.json

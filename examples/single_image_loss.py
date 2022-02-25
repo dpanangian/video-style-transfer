@@ -7,20 +7,20 @@ import os
 from vqgan_clip import _functional as VF
 
 config = VQGAN_CLIP_Config()
-config.output_image_size = [360,640]
+config.output_image_size = [180,320]
 config.seed = 111
 
 # Set True if you installed the Real-ESRGAN package for upscaling.
 upscale_image = False
 text_prompts = None
-image_prompts = '/content/drive/MyDrive/vqgan-clip-generator/samples/hokusai.jpg'
+image_prompts = r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\examples\single_image_loss.py'
 
 for loss in ['original','mse','mse-lpips','mse-pixel-lpips','mse-pixel']:
     
     output_filename = f'example media{os.sep}example image_{loss}.jpg'
     config.init_image_method = loss
     metadata_comment = generate.image(eng_config=config,
-                                    init_image=r'/content/drive/MyDrive/vqgan-clip-generator/images/init_image.jpg',
+                                    init_image=r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\examples\single_image_loss.py',
                                     init_weight=0.8,
                                     save_every=1,
                                     text_prompts=text_prompts,
