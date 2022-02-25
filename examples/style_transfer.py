@@ -9,9 +9,11 @@ import subprocess
 from vqgan_clip import _functional as VF
 
 config = VQGAN_CLIP_Config()
-config.output_image_size = [684, 384]
-text_prompts = 'portrait covered in spiders charcoal drawing'
-input_video_path = '20211004_132008000_iOS.MOV'
+config.output_image_size = [360,640]
+config.init_image_method = 'mse-lpips'
+text_prompts = None
+image_prompts = '/content/drive/MyDrive/vqgan-clip-generator/samples/hokusai.jpg'
+input_video_path = 'potrait_Trim.mp4'
 output_root_dir = 'example media'
 # Generated video framerate. Images will be extracted from the source video at this framerate, using interpolation if needed.
 video_exraction_framerate = 30
@@ -24,7 +26,7 @@ face_enhance = False
 # Set True if you installed the RIFE package for optical flow interpolation
 # IMPORTANT - RIFE will increase the framerate by 4x (-exp=2 option) or 16x (-exp=4). Keep this in mind as you generate your VQGAN video.
 # Suggested video_framerate 15 or 30 with the default 4x interpolation.
-interpolate_with_RIFE = True
+interpolate_with_RIFE = False
 
 # Set some paths
 generated_video_frames_path = os.path.join(output_root_dir, 'generated video frames')
@@ -38,16 +40,18 @@ original_video_frames = video_tools.extract_video_frames(input_video_path,
 # Apply a style to the extracted video frames.
 metadata_comment = generate.style_transfer(original_video_frames,
                                            eng_config=config,
-                                           current_source_frame_image_weight=3.2,
+                                           current_source_frame_image_weight=0.8,
                                            current_source_frame_prompt_weight=0.0,
                                            text_prompts=text_prompts,
-                                           iterations_per_frame=60,
-                                           iterations_for_first_frame=60,
+                                           image_prompts=image_prompts,
+                                           iterations_per_frame=15,
+                                           iterations_for_first_frame=100,
                                            change_prompts_on_frame=[],
                                            generated_video_frames_path=generated_video_frames_path,
                                            z_smoother=True,
                                            z_smoother_alpha=0.9,
-                                           z_smoother_buffer_len=3)
+                                           z_smoother_buffer_len=3,
+                                           verbose=True)
 
 # Upscale the video frames
 if upscale_images:

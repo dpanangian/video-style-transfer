@@ -17,12 +17,14 @@ import contextlib
 import piexif
 import cv2
 import numpy
+from torch.autograd import Variable
+from pytorch_msssim import ssim, ms_ssim, SSIM, MS_SSIM
 
 Tensor = torch.Tensor
 
 import lpips
-loss_fn_alex = lpips.LPIPS(net='alex') # best forward scores
-loss_fn_vgg = lpips.LPIPS(net='vgg') # closer to "traditional" perceptual loss, when used for optimization
+loss_fn_alex = lpips.LPIPS(net='alex').cuda() # best forward scores
+loss_fn_vgg = lpips.LPIPS(net='vgg').cuda() # closer to "traditional" perceptual loss, when used for optimization
 
 def sinc(x):
     return torch.where(x != 0, torch.sin(math.pi * x) / (math.pi * x), x.new_ones([]))
@@ -476,16 +478,20 @@ def copy_image_metadata(files_with_metadata_path,files_needing_metadata_path):
                     raise
 
 
-def lpips_loss(
-    input: Tensor,
-    target: Tensor
-) -> Tensor:
-
-    input = numpy.array(input)
-    target = numpy.array(target)
-    img0 = lpips.im2tensor(input)
-    img1 = lpips.im2tensor(target)
+def lpips_loss(x,y):
     # Compute distance
-    dist = loss_fn_vgg.forward(img0, img1)
+    dist = loss_fn_vgg.forward(x, y)
+    return dist
 
-    return dist.cuda()
+def spherical_dist_loss(x, y):
+    x = F.normalize(x, dim=-1)
+    y = F.normalize(y, dim=-1)
+    return (x - y).norm(dim=-1).div(2).arcsin().pow(2).mul(2)
+
+def ssim_loss(x,y):
+    dist = 1-ssim( x, y, data_range=1, size_average=True)
+    return dist
+
+
+ 
+

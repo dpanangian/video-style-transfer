@@ -75,8 +75,8 @@ class Engine:
     def __init__(self, config=VQGAN_CLIP_Config()):
         # self._optimiser = optim.Adam([self._z], lr=0.1)
         self.apply_configuration(config)
-        self._pil_image = None
-        self._output_pil_image = None
+        self.pil_tensor = None
+        self.pil_tensor_init = None
         self._gumbel = False
 
         self.replace_grad = VF.ReplaceGrad.apply
@@ -178,7 +178,7 @@ class Engine:
  
     def save_tensor_as_PIL(self):
         with torch.inference_mode():
-            self._output_pil_image = TF.to_pil_image(self.output_tensor[0].cpu())
+            return TF.to_pil_image(self.output_tensor[0].cpu())
     
 
     @staticmethod
@@ -208,16 +208,40 @@ class Engine:
         """
         self.output_tensor = self.synth(self._z)
         encoded_image = self._perceptor.encode_image(VF.normalize(self._make_cutouts(self.output_tensor))).float()
-        self.save_tensor_as_PIL()
         result = []
 
         if self.conf.init_weight:
             if self.conf.init_image_method == 'original':
-                result.append(F.mse_loss(self._z, self._z_orig) * self.conf.init_weight / 2)
+                pass
+            elif self.conf.init_image_method == 'mse':
+                result.append(F.mse_loss(self._z, self._z_orig) *  self.conf.init_weight / 2 )
+            elif self.conf.init_image_method == 'mse-lpips':
+                result.append(F.mse_loss(self._z, self._z_orig) *  self.conf.init_weight / 2)
+                result.append(VF.lpips_loss(self.output_tensor, self.pil_tensor_init) * 0.2)
+            elif self.conf.init_image_method == 'cos-lpips':
+                f = self._z.reshape(1,-1)
+                f2 = self._z_orig.reshape(1,-1)
+                y = torch.ones_like(f[0])
+                cur_loss = F.cosine_embedding_loss(f, f2, y) *  self.conf.init_weight / 2
+                result.append(cur_loss)
+                result.append(VF.lpips_loss(self.output_tensor, self.pil_tensor_init) * 0.2)
+            elif self.conf.init_image_method == 'mse-pixel':
+                result.append(F.l1_loss(self.output_tensor, self.pil_tensor_init) *  self.conf.init_weight / 2 )
+            elif self.conf.init_image_method == 'mse-pixel-lpips':
+                result.append(F.l1_loss(self.output_tensor, self.pil_tensor_init) *  self.conf.init_weight / 2 )
+                result.append(VF.lpips_loss(self.output_tensor, self.pil_tensor_init) * 0.2)
+            elif self.conf.init_image_method == 'cur-loss':
+                f = self._z.reshape(1,-1)
+                f2 = self._z_orig.reshape(1,-1)
+                result.append(VF.spherical_dist_loss(f,f2)*  self.conf.init_weight / 2)
+            elif self.conf.init_image_method == 'cos-loss':
+                f = self._z.reshape(1,-1)
+                f2 = self._z_orig.reshape(1,-1)
+                y = torch.ones_like(f[0])
+                cur_loss = F.cosine_embedding_loss(f, f2, y) *  self.conf.init_weight / 2
+                result.append(cur_loss)
             elif self.conf.init_image_method == 'lpips':
-                orig_image= self._pil_image
-                output_image = self._output_pil_image
-                result.append(VF.lpips_loss(orig_image, output_image) * self.conf.init_weight / 2)
+                result.append(VF.lpips_loss(self.output_tensor, self.pil_tensor_init) *  self.conf.init_weight / 2)
             elif self.conf.init_image_method == 'decay':
                 result.append(F.mse_loss(self._z, torch.zeros_like(self._z_orig)) * ((1/torch.tensor(iteration_number*2 + 1))*self.conf.init_weight) / 2)
             elif self.conf.init_image_method == 'alternate_img_target':
@@ -335,12 +359,20 @@ class Engine:
         self._z_orig = self._z.clone()
         self._z.requires_grad_(True)
 
+    def pil_image_to_tensor(self, pil_image):
+        output_image_size_X, output_image_size_Y = self.calculate_output_image_size()
+        pil_image = pil_image.convert('RGB')
+        pil_image = pil_image.resize((output_image_size_X, output_image_size_Y), Image.LANCZOS)
+        pil_tensor = TF.to_tensor(pil_image)
+        return pil_tensor.to(self._device).unsqueeze(0)
+
     def pil_image_to_latent_vector(self, pil_image):
         output_image_size_X, output_image_size_Y = self.calculate_output_image_size()
         pil_image = pil_image.convert('RGB')
         pil_image = pil_image.resize((output_image_size_X, output_image_size_Y), Image.LANCZOS)
-        self._pil_image = pil_image
         pil_tensor = TF.to_tensor(pil_image)
+        self.pil_tensor_init = pil_tensor.to(self._device).unsqueeze(0)
+
         latent_vector, *_ = self._model.encode(pil_tensor.to(self._device).unsqueeze(0) * 2 - 1)
         return latent_vector
 
@@ -351,7 +383,8 @@ class Engine:
         Args:
             pil_image (PIL image): A pil image "Image.open(self.conf.init_image)"
         """
-        self._alternate_img_target = self.pil_image_to_latent_vector(pil_image)
+        self._z_orig= self.pil_image_to_latent_vector(pil_image)
+        self.pil_tensor_init = self.pil_image_to_tensor(pil_image)
 
     def clear_all_prompts(self):
         """Clear all encoded prompts. You might use this during video generation to reset the prompts so that you can cause the video to steer in a new direction.

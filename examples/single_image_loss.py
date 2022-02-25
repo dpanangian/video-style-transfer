@@ -7,22 +7,25 @@ import os
 from vqgan_clip import _functional as VF
 
 config = VQGAN_CLIP_Config()
-config.output_image_size = [180, 128]
+config.output_image_size = [360,640]
+config.seed = 111
 
 # Set True if you installed the Real-ESRGAN package for upscaling.
-upscale_image = True
-text_prompts = 'poster art by matisse'
+upscale_image = False
+text_prompts = None
+image_prompts = '/content/drive/MyDrive/vqgan-clip-generator/samples/hokusai.jpg'
 
-for loss in ['lpips','original']:
+for loss in ['original','mse','mse-lpips','mse-pixel-lpips','mse-pixel']:
     
     output_filename = f'example media{os.sep}example image_{loss}.jpg'
     config.init_image_method = loss
     metadata_comment = generate.image(eng_config=config,
-                                    init_image=r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\images\init_image.jpg',
-                                    init_weight=1,
+                                    init_image=r'/content/drive/MyDrive/vqgan-clip-generator/images/init_image.jpg',
+                                    init_weight=0.8,
                                     save_every=1,
                                     text_prompts=text_prompts,
-                                    iterations=15,
+                                    image_prompts=image_prompts,
+                                    iterations=120,
                                     output_filename=output_filename,
                                     verbose=True)
 
