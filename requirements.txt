@@ -1,0 +1,18 @@
+torch==1.9.0+cu102 
+torchtext==0.10.0 
+torchvision==0.10.0+cu102 
+torch-optimizer==0.1.0 -f https://download.pytorch.org/whl/torch/ -f https://download.pytorch.org/whl/torchvision/
+numpy==1.19.1
+Pillow==7.2.0
+PyYAML==5.3.1
+scikit-image==0.17.2
+tensorflow==1.15.3
+opencv-python
+scipy                                  
+basicsr                                                      
+facexlib                                                     
+gfpgan                                                                       
+sk-video                                                     
+opencv-python                                                
+moviepy                                                      
+piexif   
