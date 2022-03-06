@@ -7,21 +7,22 @@ import os
 from vqgan_clip import _functional as VF
 
 config = VQGAN_CLIP_Config()
-config.output_image_size = [180,320]
+config.output_image_size = [600,800]
 config.seed = 111
-
+losses = [['mse-pixel','lpips'],['mse']]
+weights = [[3.6,3]]
 # Set True if you installed the Real-ESRGAN package for upscaling.
 upscale_image = False
 text_prompts = None
-image_prompts = r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\examples\single_image_loss.py'
+image_prompts = '/content/drive/MyDrive/vqgan-clip-generator/samples/hokusai.jpg'
 
-for loss in ['original','mse','mse-lpips','mse-pixel-lpips','mse-pixel']:
+for i,loss in enumerate(losses):
     
-    output_filename = f'example media{os.sep}example image_{loss}.jpg'
+    output_filename = f'example media{os.sep}example image_{"-".join(loss)}_{"-".join(str(weights[i]))}.jpg'
     config.init_image_method = loss
     metadata_comment = generate.image(eng_config=config,
-                                    init_image=r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\examples\single_image_loss.py',
-                                    init_weight=0.8,
+                                    init_image=r'/content/drive/MyDrive/vqgan-clip-generator/images/backonblack.jpg',
+                                    init_weight=weights[i],
                                     save_every=1,
                                     text_prompts=text_prompts,
                                     image_prompts=image_prompts,

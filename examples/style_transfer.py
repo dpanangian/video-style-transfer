@@ -9,10 +9,11 @@ import subprocess
 from vqgan_clip import _functional as VF
 
 config = VQGAN_CLIP_Config()
-config.output_image_size = [90,160]
-config.init_image_method = 'mse-lpips'
+config.output_image_size = [360,640]
+config.seed = 111
+config.init_image_method = 'mse'
 text_prompts = None
-image_prompts = r'C:\Users\danie\Documents\My Projects\vqgan-clip-generator\samples\hokusai.jpg'
+image_prompts = '/content/drive/MyDrive/vqgan-clip-generator/samples/hokusai.jpg'
 input_video_path = 'potrait_Trim.mp4'
 output_root_dir = 'example media'
 # Generated video framerate. Images will be extracted from the source video at this framerate, using interpolation if needed.
@@ -40,20 +41,18 @@ original_video_frames = video_tools.extract_video_frames(input_video_path,
 # Apply a style to the extracted video frames.
 metadata_comment = generate.style_transfer(original_video_frames,
                                            eng_config=config,
-                                           current_source_frame_image_weight=0.8,
+                                           current_source_frame_image_weight=3.2,
                                            current_source_frame_prompt_weight=0.0,
                                            text_prompts=text_prompts,
                                            image_prompts=image_prompts,
                                            iterations_per_frame=15,
-                                           iterations_for_first_frame=100,
+                                           iterations_for_first_frame=15,
                                            change_prompts_on_frame=[],
                                            generated_video_frames_path=generated_video_frames_path,
                                            z_smoother=True,
                                            z_smoother_alpha=0.9,
                                            z_smoother_buffer_len=3,
                                            verbose=True)
-
-# Upscale the video frames
 if upscale_images:
     esrgan.inference_realesrgan(input=generated_video_frames_path,
                                 output_images_path=upscaled_video_frames_path,
