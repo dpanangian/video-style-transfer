@@ -1,3 +1,5 @@
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/10mTcBwGa3O_eel6P6zMVE6XGVDVFzYcY?usp=sharing)
+
 # Overview
 
 This package started as a complete refactor of the code provided by [rkhamilton](https://github.com/rkhamilton/) & [NerdyRodent](https://github.com/nerdyrodent/), which started out as a Katherine Crowson VQGAN+CLIP-derived Google colab notebook.
