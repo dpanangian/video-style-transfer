@@ -125,7 +125,7 @@ def image(output_filename,
             f'image_prompts: {image_prompts}, '\
             f'noise_prompts: {noise_prompts}, '\
             f'init_weight_method: {",".join(eng_config.init_image_method)}, '\
-            f'init_weight {",".join(str(eng_config.init_weight))}, '\
+            f'init_weight {",".join([str(x) for x in eng_config.init_weight])}, '\
             f'init_image {init_image}, '\
             f'cut_method {eng_config.cut_method}, '\
             f'seed {eng.conf.seed}'
@@ -292,8 +292,8 @@ def style_transfer(video_frames,
                 ('z_smoother',z_smoother),
                 ('z_smoother_buffer_len',z_smoother_buffer_len),
                 ('z_smoother_alpha',z_smoother_alpha),
-                ('current_source_frame_prompt_weight',f'{",".join(str(current_source_frame_prompt_weight))}'),
-                ('current_source_frame_image_weight',f'{",".join(str(current_source_frame_image_weight))}')]
+                ('current_source_frame_prompt_weight',f'{",".join([str(x) for x in current_source_frame_prompt_weight])}'),
+                ('current_source_frame_image_weight',f'{",".join([str(x) for x in current_source_frame_image_weight])}')]
             if z_smoother:
                 smoothed_z.append(eng._z.clone())
                 output_tensor = eng.synth(smoothed_z._mid_ewma())
@@ -309,9 +309,9 @@ def style_transfer(video_frames,
             f'image_prompts: {image_prompts}, '\
             f'noise_prompts: {noise_prompts}, '\
             f'init_weight_method: {",".join(eng_config.init_image_method)}, '\
-            f'init_weight {",".join(str(eng_config.init_weight))}, '\
-            f'current_source_frame_prompt_weight {",".join(str(current_source_frame_prompt_weight))}, '\
-            f'current_source_frame_image_weight {",".join(str(current_source_frame_image_weight))}, '\
+            f'init_weight {",".join([str(x) for x in eng_config.init_weight]}, '\
+            f'current_source_frame_prompt_weight {",".join([str(x) for x in current_source_frame_prompt_weight])}, '\
+            f'current_source_frame_image_weight {",".join([str(x) for x in current_source_frame_image_weight])}, '\
             f'cut_method {eng_config.cut_method}, '\
             f'z_smoother {z_smoother:2.2f}, '\
             f'z_smoother_buffer_len {z_smoother_buffer_len:2.2f}, '\
@@ -425,9 +425,9 @@ def style_transfer_per_frame(video_frames,
     config_info=f'iterations_per_frame: {iterations_per_frame}, '\
             f'image_prompts: {image_prompts}, '\
             f'noise_prompts: {noise_prompts}, '\
-            f'init_weight {",".join(str(eng_config.init_weight))}, '\
-            f'current_source_frame_prompt_weight {",".join(str(current_source_frame_prompt_weight}, '\
-            f'current_source_frame_image_weight {",".join(str(current_source_frame_image_weight))}, '\
+            f'init_weight {",".join([str(x) for x in eng_config.init_weight])}, '\
+            f'current_source_frame_prompt_weight {",".join([str(x) for x in current_source_frame_prompt_weight])}, '\
+            f'current_source_frame_image_weight {",".join([str(x) for x in current_source_frame_image_weight])}, '\
             f'cut_method {eng_config.cut_method}, '\
             f'seed {eng.conf.seed}'
             
