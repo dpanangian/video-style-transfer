@@ -35,9 +35,18 @@ In addition to refactoring NerdyRodent's code into a more pythonic package to im
   journal={arXiv preprint arXiv:2011.06294},
   year={2020}
 }
+@Article{Texler20-SIG,
+    author    = "Ond\v{r}ej Texler and David Futschik and Michal Ku\v{c}era and Ond\v{r}ej Jamri\v{s}ka and \v{S}\'{a}rka Sochorov\'{a} and Menglei Chai and Sergey Tulyakov and Daniel S\'{y}kora",
+    title     = "Interactive Video Stylization Using Few-Shot Patch-Based Training",
+    journal   = "ACM Transactions on Graphics",
+    volume    = "39",
+    number    = "4",
+    pages     = "73",
+    year      = "2020",
+}
 ```
 
 Katherine Crowson - <https://github.com/crowsonkb>  
 NerdyRodent - <https://github.com/nerdyrodent/>
-rkhamilton - <https://github.com/rkhamilton>
+rkhamilton - <https://github.com/rkhamilton/>
 
