@@ -279,19 +279,6 @@ def style_transfer(video_frames,
                 losses_str = ', '.join(f'{loss.item():7.3f}' for loss in lossAll)
                 tqdm.write(f'iteration:{iteration_num:6d}\tvideo frame: {video_frame_num:6d}\tloss sum: {sum(lossAll).item():7.3f}\tloss for each prompt:{losses_str}')
 
-            # save a frame of video
-            # metadata to save to PNG file as data chunks
-            img_info =  [('text_prompts',text_prompts),
-                ('image_prompts',image_prompts),
-                ('noise_prompts',noise_prompts),
-                ('iterations_per_frame',iterations_per_frame),
-                ('iterations_for_first_frame',iterations_for_first_frame),
-                ('cut_method',eng_config.cut_method),
-                ('init_image',video_frame),
-                ('seed',eng.conf.seed),
-                ('z_smoother',z_smoother),
-                ('z_smoother_buffer_len',z_smoother_buffer_len),
-                ('z_smoother_alpha',z_smoother_alpha)]
             if z_smoother:
                 smoothed_z.append(eng._z.clone())
                 output_tensor = eng.synth(smoothed_z._mid_ewma())
