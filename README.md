@@ -1,6 +1,6 @@
 # Overview
 
-This package started as a complete refactor of the code provided by [NerdyRodent](https://github.com/nerdyrodent/), which started out as a Katherine Crowson VQGAN+CLIP-derived Google colab notebook.
+This package started as a complete refactor of the code provided by [rkhamilton](https://github.com/rkhamilton/) & [NerdyRodent](https://github.com/nerdyrodent/), which started out as a Katherine Crowson VQGAN+CLIP-derived Google colab notebook.
 
 In addition to refactoring NerdyRodent's code into a more pythonic package to improve usability, this project includes the following noteable elements:
 * LPIPS loss
@@ -39,4 +39,5 @@ In addition to refactoring NerdyRodent's code into a more pythonic package to im
 
 Katherine Crowson - <https://github.com/crowsonkb>  
 NerdyRodent - <https://github.com/nerdyrodent/>
+rkhamilton - <https://github.com/rkhamilton>
 
