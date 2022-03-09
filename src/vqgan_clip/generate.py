@@ -121,6 +121,17 @@ def image(output_filename,
         pass
 
 
+    config_info=f'iterations: {iterations}, '\
+            f'image_prompts: {image_prompts}, '\
+            f'noise_prompts: {noise_prompts}, '\
+            f'init_weight_method: {",".join(eng_config.init_image_method)}, '\
+            f'init_weight {",".join(str(eng_config.init_weight))}, '\
+            f'init_image {init_image}, '\
+            f'cut_method {eng_config.cut_method}, '\
+            f'seed {eng.conf.seed}'
+    return config_info
+
+
 def style_transfer(video_frames,
     eng_config=VQGAN_CLIP_Config(),
     text_prompts = 'Covered in spiders | Surreal:0.5',
@@ -268,6 +279,21 @@ def style_transfer(video_frames,
                 losses_str = ', '.join(f'{loss.item():7.3f}' for loss in lossAll)
                 tqdm.write(f'iteration:{iteration_num:6d}\tvideo frame: {video_frame_num:6d}\tloss sum: {sum(lossAll).item():7.3f}\tloss for each prompt:{losses_str}')
 
+            # save a frame of video
+            # metadata to save to PNG file as data chunks
+            img_info =  [('text_prompts',text_prompts),
+                ('image_prompts',image_prompts),
+                ('noise_prompts',noise_prompts),
+                ('iterations_per_frame',iterations_per_frame),
+                ('iterations_for_first_frame',iterations_for_first_frame),
+                ('cut_method',eng_config.cut_method),
+                ('init_image',video_frame),
+                ('seed',eng.conf.seed),
+                ('z_smoother',z_smoother),
+                ('z_smoother_buffer_len',z_smoother_buffer_len),
+                ('z_smoother_alpha',z_smoother_alpha),
+                ('current_source_frame_prompt_weight',f'{",".join(str(current_source_frame_prompt_weight))}'),
+                ('current_source_frame_image_weight',f'{",".join(str(current_source_frame_image_weight))}')]
             if z_smoother:
                 smoothed_z.append(eng._z.clone())
                 output_tensor = eng.synth(smoothed_z._mid_ewma())
@@ -278,6 +304,21 @@ def style_transfer(video_frames,
             video_frame_num += 1
     except KeyboardInterrupt:
         pass
+
+    config_info=f'iterations_per_frame: {iterations_per_frame}, '\
+            f'image_prompts: {image_prompts}, '\
+            f'noise_prompts: {noise_prompts}, '\
+            f'init_weight_method: {",".join(eng_config.init_image_method)}, '\
+            f'init_weight {",".join(str(eng_config.init_weight))}, '\
+            f'current_source_frame_prompt_weight {",".join(str(current_source_frame_prompt_weight))}, '\
+            f'current_source_frame_image_weight {",".join(str(current_source_frame_image_weight))}, '\
+            f'cut_method {eng_config.cut_method}, '\
+            f'z_smoother {z_smoother:2.2f}, '\
+            f'z_smoother_buffer_len {z_smoother_buffer_len:2.2f}, '\
+            f'z_smoother_alpha {z_smoother_alpha:2.2f}, '\
+            f'seed {eng.conf.seed}'
+
+    return config_info
 
 
 def style_transfer_per_frame(video_frames,
@@ -380,6 +421,18 @@ def style_transfer_per_frame(video_frames,
             video_frame_num += 1
     except KeyboardInterrupt:
         pass
+
+    config_info=f'iterations_per_frame: {iterations_per_frame}, '\
+            f'image_prompts: {image_prompts}, '\
+            f'noise_prompts: {noise_prompts}, '\
+            f'init_weight {",".join(str(eng_config.init_weight))}, '\
+            f'current_source_frame_prompt_weight {",".join(str(current_source_frame_prompt_weight}, '\
+            f'current_source_frame_image_weight {",".join(str(current_source_frame_image_weight))}, '\
+            f'cut_method {eng_config.cut_method}, '\
+            f'seed {eng.conf.seed}'
+            
+
+    return config_info
 
 def style_transfer_fewshot(video_frames,
     video_frames_path,
