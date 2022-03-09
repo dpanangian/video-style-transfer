@@ -291,9 +291,7 @@ def style_transfer(video_frames,
                 ('seed',eng.conf.seed),
                 ('z_smoother',z_smoother),
                 ('z_smoother_buffer_len',z_smoother_buffer_len),
-                ('z_smoother_alpha',z_smoother_alpha),
-                ('current_source_frame_prompt_weight',f'{",".join([str(x) for x in current_source_frame_prompt_weight])}'),
-                ('current_source_frame_image_weight',f'{",".join([str(x) for x in current_source_frame_image_weight])}')]
+                ('z_smoother_alpha',z_smoother_alpha)]
             if z_smoother:
                 smoothed_z.append(eng._z.clone())
                 output_tensor = eng.synth(smoothed_z._mid_ewma())
