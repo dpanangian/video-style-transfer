@@ -292,7 +292,7 @@ def style_transfer(video_frames,
                 ('z_smoother',z_smoother),
                 ('z_smoother_buffer_len',z_smoother_buffer_len),
                 ('z_smoother_alpha',z_smoother_alpha),
-                ('current_source_frame_prompt_weight',f'{current_source_frame_prompt_weight:2.2f}'),
+                ('current_source_frame_prompt_weight',f'{",".join(str(current_source_frame_prompt_weight))}'),
                 ('current_source_frame_image_weight',f'{",".join(str(current_source_frame_image_weight))}')]
             if z_smoother:
                 smoothed_z.append(eng._z.clone())
