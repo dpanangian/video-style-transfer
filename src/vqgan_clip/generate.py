@@ -294,7 +294,7 @@ def style_transfer(video_frames,
             f'image_prompts: {image_prompts}, '\
             f'noise_prompts: {noise_prompts}, '\
             f'init_weight_method: {",".join(eng_config.init_image_method)}, '\
-            f'init_weight {",".join([str(x) for x in eng_config.init_weight]}, '\
+            f'init_weight {",".join([str(x) for x in eng_config.init_weight])}, '\
             f'current_source_frame_prompt_weight {",".join([str(x) for x in current_source_frame_prompt_weight])}, '\
             f'current_source_frame_image_weight {",".join([str(x) for x in current_source_frame_image_weight])}, '\
             f'cut_method {eng_config.cut_method}, '\
