@@ -121,17 +121,6 @@ def image(output_filename,
         pass
 
 
-    config_info=f'iterations: {iterations}, '\
-            f'image_prompts: {image_prompts}, '\
-            f'noise_prompts: {noise_prompts}, '\
-            f'init_weight_method: {",".join(eng_config.init_image_method)}, '\
-            f'init_weight {",".join([str(x) for x in eng_config.init_weight])}, '\
-            f'init_image {init_image}, '\
-            f'cut_method {eng_config.cut_method}, '\
-            f'seed {eng.conf.seed}'
-    return config_info
-
-
 def style_transfer(video_frames,
     eng_config=VQGAN_CLIP_Config(),
     text_prompts = 'Covered in spiders | Surreal:0.5',
@@ -290,21 +279,6 @@ def style_transfer(video_frames,
     except KeyboardInterrupt:
         pass
 
-    config_info=f'iterations_per_frame: {iterations_per_frame}, '\
-            f'image_prompts: {image_prompts}, '\
-            f'noise_prompts: {noise_prompts}, '\
-            f'init_weight_method: {",".join(eng_config.init_image_method)}, '\
-            f'init_weight {",".join([str(x) for x in eng_config.init_weight])}, '\
-            f'current_source_frame_prompt_weight {",".join([str(x) for x in current_source_frame_prompt_weight])}, '\
-            f'current_source_frame_image_weight {",".join([str(x) for x in current_source_frame_image_weight])}, '\
-            f'cut_method {eng_config.cut_method}, '\
-            f'z_smoother {z_smoother:2.2f}, '\
-            f'z_smoother_buffer_len {z_smoother_buffer_len:2.2f}, '\
-            f'z_smoother_alpha {z_smoother_alpha:2.2f}, '\
-            f'seed {eng.conf.seed}'
-
-    return config_info
-
 
 def style_transfer_per_frame(video_frames,
     eng_config=VQGAN_CLIP_Config(),
@@ -407,18 +381,6 @@ def style_transfer_per_frame(video_frames,
     except KeyboardInterrupt:
         pass
 
-    config_info=f'iterations_per_frame: {iterations_per_frame}, '\
-            f'image_prompts: {image_prompts}, '\
-            f'noise_prompts: {noise_prompts}, '\
-            f'init_weight {",".join([str(x) for x in eng_config.init_weight])}, '\
-            f'current_source_frame_prompt_weight {",".join([str(x) for x in current_source_frame_prompt_weight])}, '\
-            f'current_source_frame_image_weight {",".join([str(x) for x in current_source_frame_image_weight])}, '\
-            f'cut_method {eng_config.cut_method}, '\
-            f'seed {eng.conf.seed}'
-            
-
-    return config_info
-
 def style_transfer_fewshot(video_frames,
     video_frames_path,
     output_path,
@@ -479,7 +441,7 @@ def style_transfer_fewshot(video_frames,
 
       video_frames = sorted(glob.glob(f'{train_input_dir}{os.sep}*.png'))
 
-      metadata_comment = style_transfer_per_frame(video_frames,
+      style_transfer_per_frame(video_frames,
                                           eng_config,
                                           text_prompts,
                                           image_prompts,
@@ -503,8 +465,6 @@ def style_transfer_fewshot(video_frames,
     st(fewshot_config_file,"logs_reference_P",temp_fewshot_path,fewshot_iterations)
 
     copy_tree(gen_output_dir, output_path)
-
-    return metadata_comment
 
     
 
